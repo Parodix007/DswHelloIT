@@ -9,35 +9,47 @@ import java.util.concurrent.Callable;
  * <p>Klasa odpowiedzialna za obsługę całego procesu CLI dla aplikacji w tej klasie odbywają się procesy interpretowania komend</p>
  * @author Sebastian Siarczyński
  */
-public class CLIClass implements Callable<Boolean> {
+@CommandLine.Command(name = "passmng", description = "Zapisywanie haseł do pliku lub lokalnej bazy danych", version = "0.0.1", exitCodeOnSuccess = 10, exitCodeOnInvalidInput = 11, exitCodeOnExecutionException = 20)
+public class CLIClass implements Callable<Integer> {
+
+    /**
+     * <h2>SaveOptions</h2>
+     * <p>Klasa odpowiedzialna za grupowanie typów zapisu</p>
+     * @author Sebastian Siarczyński
+     */
+    private static class SaveOptions {
+        public SaveOptions(){}
+        /**
+         *  <p>Opcja, która określa czy chcesz zapisać swoje dane do pliku, pliki są zapisywane w rozszerzeniu JSON, plik jest ukryty i nie podaje mu się nazwy jest ona domyślna</p>
+         * @author Sebastian Siarczyński
+         */
+        @CommandLine.Option(names = {"-f", "-file"}, description = "Flaga, która mówi o tym czy chcesz używać pliku do zapisu haseł", paramLabel = "Flaga pliku", required = false)
+        boolean file;
+
+        /**
+         *  <p>Opcja, która określa czy chcesz dane zapisywać do bazy danych, baza danych jest z góry zdeterminowana więc użytkownik nie może używać swoich baz danych</p>
+         * @author Sebastian Siarczyński
+         */
+        @CommandLine.Option(names = {"-db", "-database"}, description = "Flaga, która mówi o tym czy chcesz używać bazy danych do zapisu haseł", paramLabel = "Flaga bazy danych", required = false)
+        boolean db;
+    }
+
+    @CommandLine.ArgGroup(multiplicity = "1")
+    SaveOptions saveOptions = new SaveOptions();
 
     /**
      *  <p>Parametr, który określa do jakiego źródła chcesz zapisać hasło</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "źródło", description = "Do czego potrzebujesz zapisać hasło")
+    @CommandLine.Parameters(paramLabel = "źródło", description = "Do czego potrzebujesz zapisać hasło", index = "0")
     String sourceName;
-
-    /**
-     *  <p>Opcja, która określa czy chcesz zapisać swoje dane do pliku, pliki są zapisywane w rozszerzeniu JSON, plik jest ukryty i nie podaje mu się nazwy jest ona domyślna</p>
-     * @author Sebastian Siarczyński
-     */
-    @CommandLine.Option(names = {"-f", "--file"}, description = "Flaga, która mówi o tym czy chcesz używać pliku do zapisu haseł", paramLabel = "Flaga pliku")
-    boolean file;
 
     /**
      *  <p>Parametr, do którego podaje się scieżkę pliku</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "Ścieżka do pliku")
+    @CommandLine.Parameters(paramLabel = "Ścieżka do pliku", description = "Ścieżka do pliku.\nBez nazwy pliku!!!!", index = "1")
     String filePath;
-
-    /**
-     *  <p>Opcja, która określa czy chcesz dane zapisywać do bazy danych, baza danych jest z góry zdeterminowana więc użytkownik nie może używać swoich baz danych</p>
-     * @author Sebastian Siarczyński
-     */
-    @CommandLine.Option(names = {"-db", "--database"}, description = "Flaga, która mówi o tym czy chcesz używać bazy danych do zapisu haseł", paramLabel = "Flaga bazy danych")
-    boolean db;
 
     /**
      *  <p>Parametr, do którego wprwadza się nazwę lokalną użytkownika, który może łączyć się z bazą danych</p>
@@ -61,10 +73,10 @@ public class CLIClass implements Callable<Boolean> {
     String dbPass;
 
     /**
-     *  <p>Parametr z hasłem, które chcemy zapisać</p>
+     *  <p>Opcja z hasłem, które chcemy zapisać</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "Hasło", description = "Hasło, które chcesz zapisać", interactive = true)
+    @CommandLine.Option(names = {"-p", "-password"}, required = true, paramLabel = "Hasło", description = "Hasło, które chcesz zapisać", interactive = true)
     String passToSave;
 
     /**
@@ -74,7 +86,16 @@ public class CLIClass implements Callable<Boolean> {
      * @author Sebastian Siarczyński
      */
     @Override
-    public Boolean call() throws Exception {
-        return null;
+    public Integer call() throws Exception {
+        if (saveOptions.db) {
+            System.out.println("DATA BASE");
+            return 10;
+        }
+        if (saveOptions.file) {
+            System.out.println("FILE");
+            System.out.println(passToSave);
+            return 10;
+        }
+        throw new Exception("Brak obowiązkowych argumentów");
     }
 }
