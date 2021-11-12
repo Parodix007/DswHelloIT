@@ -2,6 +2,10 @@ package com.PasswordProject;
 
 import picocli.CommandLine;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -55,21 +59,21 @@ public class CLIClass implements Callable<Integer> {
      *  <p>Parametr, do którego wprwadza się nazwę lokalną użytkownika, który może łączyć się z bazą danych</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "Nazwa użytkownika do bazy danych", arity = "0")
+    @CommandLine.Parameters(paramLabel = "Nazwa użytkownika do bazy danych", arity = "0", index = "2")
     String dbUser;
 
     /**
      * <p>Parametr, do którego można wprowadzić swój adres email powiązany z hasłem, które chcemy zapisać</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "Twoj adres email", description = "Adres email, który jest używany do logowania", arity = "0")
+    @CommandLine.Parameters(paramLabel = "Twoj adres email", description = "Adres email, który jest używany do logowania", arity = "0", index = "3")
     String userEmail;
 
     /**
-     *  <p>Parametr z hasłem do bazy danych dla użytkownika, który ma się łączyć z bazą</p>
+     *  <p>Opcja z hasłem do bazy danych dla użytkownika, który ma się łączyć z bazą</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "Hasło bazy danych", description = "Hasło do bazy danych dla użytkownika, który został podany", arity = "0")
+    @CommandLine.Option(names = {"-dbpass"}, paramLabel = "Hasło bazy danych", description = "Hasło do bazy danych dla użytkownika, który został podany", interactive = true)
     String dbPass;
 
     /**
@@ -87,13 +91,14 @@ public class CLIClass implements Callable<Integer> {
      */
     @Override
     public Integer call() throws Exception {
+        MessageDigest passHash = MessageDigest.getInstance("SHA-256");
         if (saveOptions.db) {
             System.out.println("DATA BASE");
             return 10;
         }
         if (saveOptions.file) {
-            System.out.println("FILE");
-            System.out.println(passToSave);
+            FilesClass filesClass = new FilesClass(filePath);
+            if (filesClass.checkIfFile()) throw new Exception("Podana ścieżka jest plikiem!");
             return 10;
         }
         throw new Exception("Brak obowiązkowych argumentów");
