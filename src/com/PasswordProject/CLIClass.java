@@ -91,7 +91,6 @@ public class CLIClass implements Callable<Integer> {
      */
     @Override
     public Integer call() throws Exception {
-        MessageDigest passHash = MessageDigest.getInstance("SHA-256");
         if (saveOptions.db) {
             System.out.println("DATA BASE");
             return 10;
