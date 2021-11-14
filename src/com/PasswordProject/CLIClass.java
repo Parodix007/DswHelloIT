@@ -98,7 +98,7 @@ public class CLIClass implements Callable<Integer> {
         }
         if (saveOptions.file) {
             FilesClass filesClass = new FilesClass(filePath);
-            if (filesClass.checkIfFile()) throw new Exception("Podana ścieżka jest plikiem!");
+            if (filesClass.checkIfProperPath()) throw new Exception("Podano złą ścieżkę!");
             return 10;
         }
         throw new Exception("Brak obowiązkowych argumentów");

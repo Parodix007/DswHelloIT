@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
+/**
+ * <h2>CLITest</h2>
+ * <p>Klasa testowa odpowiedzialna za testowanie działania wywołań CLI programu</p>
+ * @author Sebastian Siarczyński
+ */
 public class CLITest {
 
     /**

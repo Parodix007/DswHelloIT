@@ -4,8 +4,6 @@ import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,13 +22,13 @@ public class FilesClass {
     }
 
     /**
-     * <p>Metoda, która sprawdza czy zadana ścieżka podana przez użytkownika nie jest plikiem</p>
+     * <p>Metoda, która sprawdza czy zadana ścieżka podana przez użytkownika jest prawidłowa/p>
      * @return Czy ścieżka jest plikiem
      * @author Sebastian Siarczyński
      */
-    public boolean checkIfFile() {
+    public boolean checkIfProperPath() {
         File file = new File(userPath);
-        return file.isFile();
+        return !file.isFile() && file.isDirectory() && file.exists();
     }
 
     /**
@@ -52,10 +50,12 @@ public class FilesClass {
     }
 
     /**
-     *  <p>Metoda, która jest odpowiedzialna za zapisywanie/dopisywanie danych do pliku</p>
-     * @param source źródło, do którego hasło zapisujemy
-     * @param hashedPass hasło, które zostało już zaszyfrowane SHA-256
-     * @return Czy udało się zapisać dane do pliku i czy plik został utworzony
+     * <p>Metoda odpowiedzialna za zapisywanie hasła użytkownika do pliku</p>
+     * @param source źródło, do którego potrzebujemy zapisać hasło
+     * @param hashedPass zaszyfrowane hasło, które zapisujemy do pliku
+     * @param userEmail ewentualny adres email powiązany z hasłem, które zapisujemy
+     * @return Czy udało się zapisać hasło i plik
+     * @author Sebastian Siarczyński
      */
     public boolean saveToFile(@NotNull String source, @NotNull byte[] hashedPass, @Nullable String userEmail) {
         Map<String, String> userData = new HashMap<>();
