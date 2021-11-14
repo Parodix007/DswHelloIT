@@ -3,14 +3,15 @@ package com.PasswordProject;
 import groovy.json.JsonBuilder;
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 // TODO: Jak odczytywać dane z pliku bez ładowania całego
 
@@ -23,6 +24,7 @@ public class FilesClass {
     private final String userPath;
     private String absPath;
     private final File fullPath;
+    private final AtomicReference<JSONObject> jsonFromFile = new AtomicReference<>();
     public FilesClass(@NotNull String userPath) {
         this.userPath = userPath;
         setAbsPath();
@@ -34,6 +36,7 @@ public class FilesClass {
      * @return Czy ścieżka jest plikiem
      * @author Sebastian Siarczyński
      */
+    @NotNull
     public boolean checkIfProperPath() {
         File file = new File(userPath);
         return !file.isFile() && file.isDirectory() && file.exists();
@@ -76,16 +79,32 @@ public class FilesClass {
      * @return Czy udało się zapisać hasło i plik
      * @author Sebastian Siarczyński
      */
+    @NotNull
     public boolean saveToFile(@NotNull String source, @NotNull byte[] hashedPass, @Nullable String userEmail) {
         Map<String, String> userData = new HashMap<>();
         userData.put("password", Arrays.toString(hashedPass));
         userData.put("email", userEmail != null ? userEmail : "");
-
-        Map<String, Map<String, String>> userDataToFile = new HashMap<>();
-        userDataToFile.put(source, userData);
-        JsonBuilder jsonBuilder = new JsonBuilder(userDataToFile);
         try {
-            Files.writeString(Path.of(fullPath.toString()), jsonBuilder.toString());
+            if (!Files.exists(fullPath.toPath())) {
+                System.out.println("NIE ISTNIEJE");
+                Map<String, Map<String, String>> userDataToFile = new HashMap<>();
+                userDataToFile.put(source.toLowerCase(), userData);
+                JSONObject jsonObject = new JSONObject(userDataToFile);
+                Files.writeString(fullPath.toPath(), jsonObject.toString());
+                return true;
+            }
+            System.out.println("ISTNIEJE");
+            System.out.println(fullPath.toPath());
+            Files.readAllLines(fullPath.toPath()).stream()
+                    .filter(e -> e != null && e.length() != 0)
+                    .forEach(e -> {
+                        System.out.println(e);
+                        jsonFromFile.set(new JSONObject(e));
+                        JSONObject jsonObject = jsonFromFile.get();
+                        jsonObject.put(source.toLowerCase(), userData);
+                        jsonFromFile.set(jsonObject);
+                    });
+            Files.writeString(fullPath.toPath(), jsonFromFile.get().toString());
         } catch (IOException e) {
             return false;
         }

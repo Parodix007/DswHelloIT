@@ -56,18 +56,18 @@ public class CLIClass implements Callable<Integer> {
     String filePath;
 
     /**
-     *  <p>Parametr, do którego wprwadza się nazwę lokalną użytkownika, który może łączyć się z bazą danych</p>
-     * @author Sebastian Siarczyński
-     */
-    @CommandLine.Parameters(paramLabel = "Nazwa użytkownika do bazy danych", arity = "0", index = "2")
-    String dbUser;
-
-    /**
      * <p>Parametr, do którego można wprowadzić swój adres email powiązany z hasłem, które chcemy zapisać</p>
      * @author Sebastian Siarczyński
      */
-    @CommandLine.Parameters(paramLabel = "Twoj adres email", description = "Adres email, który jest używany do logowania", arity = "0", index = "3")
+    @CommandLine.Parameters(paramLabel = "Twoj adres email", description = "Adres email, który jest używany do logowania", arity = "0", index = "2")
     String userEmail;
+
+    /**
+     *  <p>Parametr, do którego wprwadza się nazwę lokalną użytkownika, który może łączyć się z bazą danych</p>
+     * @author Sebastian Siarczyński
+     */
+    @CommandLine.Option( names = {"-dbuser"}, paramLabel = "Nazwa użytkownika do bazy danych", description = "Nazwa użytkownika do twojej lokalnej bazy danych")
+    String dbUser;
 
     /**
      *  <p>Opcja z hasłem do bazy danych dla użytkownika, który ma się łączyć z bazą</p>
@@ -97,8 +97,13 @@ public class CLIClass implements Callable<Integer> {
         }
         if (saveOptions.file) {
             FilesClass filesClass = new FilesClass(filePath);
-            if (filesClass.checkIfProperPath()) throw new Exception("Podano złą ścieżkę!");
-            return 10;
+            if (!filesClass.checkIfProperPath()) return 20;
+            if (filesClass.saveToFile(
+                    sourceName,
+                    EncryptClass.hashStringToSHA256(passToSave),
+                    userEmail)
+            ) return 10;
+            return 20;
         }
         throw new Exception("Brak obowiązkowych argumentów");
     }

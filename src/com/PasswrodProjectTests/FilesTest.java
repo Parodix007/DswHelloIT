@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class FilesTest {
     private FilesClass filesClass;
-    private String path = "/Users/sebastiansiarczynski/";
+    private String path = "/Users/sebastiansiarczynski";
 
     /**
      * <p>Metoda, która pozwala na inicjowanie klasy {@link FilesClass} przed każdym testem</p>
@@ -59,9 +59,9 @@ public class FilesTest {
     @Test
     public void checkSaveToFile() throws NoSuchAlgorithmException {
         MessageDigest instance = MessageDigest.getInstance("SHA-256");
-        String pass = "1234";
+        String pass = "12345";
         byte[] encodedPass = instance.digest(pass.getBytes(StandardCharsets.UTF_8));
 
-        assertTrue(filesClass.saveToFile("Facebook", encodedPass, "test@gmail.com"));
+        assertTrue(filesClass.saveToFile("instagram", encodedPass, "test@gmail.com"));
     }
 }
