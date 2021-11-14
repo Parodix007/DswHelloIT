@@ -1,12 +1,18 @@
 package com.PasswordProject;
 
+import groovy.json.JsonBuilder;
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+// TODO: Jak odczytywać dane z pliku bez ładowania całego
 
 /**
  * <h2>FilesClass</h2>
@@ -16,9 +22,11 @@ import java.util.Map;
 public class FilesClass {
     private final String userPath;
     private String absPath;
+    private final File fullPath;
     public FilesClass(@NotNull String userPath) {
         this.userPath = userPath;
         setAbsPath();
+        fullPath = new File(absPath + "/.passmng");
     }
 
     /**
@@ -45,8 +53,19 @@ public class FilesClass {
      * @return {@link FilesClass#absPath}
      * @author Sebastian Siarczyński
      */
+    @NotNull
     public String getAbsPath() {
         return absPath;
+    }
+
+    /**
+     * <p>Getter do zmiennej {@link FilesClass#fullPath}</p>
+     * @return {@link FilesClass#fullPath}
+     * @author Sebastian Siarczyński
+     */
+    @NotNull
+    public File getFullPath() {
+        return fullPath;
     }
 
     /**
@@ -64,6 +83,12 @@ public class FilesClass {
 
         Map<String, Map<String, String>> userDataToFile = new HashMap<>();
         userDataToFile.put(source, userData);
-        return false;
+        JsonBuilder jsonBuilder = new JsonBuilder(userDataToFile);
+        try {
+            Files.writeString(Path.of(fullPath.toString()), jsonBuilder.toString());
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
 }

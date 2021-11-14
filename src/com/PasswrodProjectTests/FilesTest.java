@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * <h2>FilesTest</h2>
@@ -43,5 +46,22 @@ public class FilesTest {
     public void checkAbsPath() {
         File file = new File(path);
         assertEquals(file.getAbsolutePath(), filesClass.getAbsPath());
+    }
+    @Test
+    public void checkFullPath() {
+        assertNotNull(filesClass.getFullPath());
+    }
+    /**
+     * <p>Metoda sprwadzająca poprawność zapisywania do pliku</p>
+     * @throws NoSuchAlgorithmException
+     * @author Sebastian Siarczyński
+     */
+    @Test
+    public void checkSaveToFile() throws NoSuchAlgorithmException {
+        MessageDigest instance = MessageDigest.getInstance("SHA-256");
+        String pass = "1234";
+        byte[] encodedPass = instance.digest(pass.getBytes(StandardCharsets.UTF_8));
+
+        assertTrue(filesClass.saveToFile("Facebook", encodedPass, "test@gmail.com"));
     }
 }
