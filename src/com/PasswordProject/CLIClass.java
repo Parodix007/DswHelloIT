@@ -101,7 +101,8 @@ public class CLIClass implements Callable<Integer> {
             if (filesClass.saveToFile(
                     sourceName,
                     EncryptClass.hashStringToSHA256(passToSave),
-                    userEmail)
+                    userEmail,
+                    null)
             ) return 10;
             return 20;
         }

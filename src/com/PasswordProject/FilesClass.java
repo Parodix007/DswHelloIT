@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 
 // TODO: Jak odczytywać dane z pliku bez ładowania całego
@@ -80,25 +81,31 @@ public class FilesClass {
      * @author Sebastian Siarczyński
      */
     @NotNull
-    public boolean saveToFile(@NotNull String source, @NotNull byte[] hashedPass, @Nullable String userEmail) {
+    public boolean saveToFile(@NotNull String source, @NotNull byte[] hashedPass, @Nullable String userEmail, @Nullable String testInput) {
         Map<String, String> userData = new HashMap<>();
         userData.put("password", Arrays.toString(hashedPass));
         userData.put("email", userEmail != null ? userEmail : "");
         try {
             if (!Files.exists(fullPath.toPath())) {
-                System.out.println("NIE ISTNIEJE");
+                System.out.println("Tworzenie pliku z podanymi danymi...");
                 Map<String, Map<String, String>> userDataToFile = new HashMap<>();
                 userDataToFile.put(source.toLowerCase(), userData);
                 JSONObject jsonObject = new JSONObject(userDataToFile);
                 Files.writeString(fullPath.toPath(), jsonObject.toString());
                 return true;
             }
-            System.out.println("ISTNIEJE");
-            System.out.println(fullPath.toPath());
+            System.out.println("Nadpisywanie pliku danymi...");
+            System.out.printf("Czy podana ścieżka jest poprawna: %s | [t/n] ", fullPath.toPath());
+            Scanner scanner = new Scanner(System.in);
+            if (testInput != null) {
+                if (testInput.equals("n")) return false;
+            } else {
+                String isPath = scanner.nextLine();
+                if (isPath.equals("n")) return false;
+            }
             Files.readAllLines(fullPath.toPath()).stream()
                     .filter(e -> e != null && e.length() != 0)
                     .forEach(e -> {
-                        System.out.println(e);
                         jsonFromFile.set(new JSONObject(e));
                         JSONObject jsonObject = jsonFromFile.get();
                         jsonObject.put(source.toLowerCase(), userData);
@@ -106,6 +113,7 @@ public class FilesClass {
                     });
             Files.writeString(fullPath.toPath(), jsonFromFile.get().toString());
         } catch (IOException e) {
+            System.out.println("Błąd zapisu, spróbuj ponowanie...");
             return false;
         }
         return true;

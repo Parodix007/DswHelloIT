@@ -62,6 +62,7 @@ public class FilesTest {
         String pass = "12345";
         byte[] encodedPass = instance.digest(pass.getBytes(StandardCharsets.UTF_8));
 
-        assertTrue(filesClass.saveToFile("instagram", encodedPass, "test@gmail.com"));
+        assertTrue(filesClass.saveToFile("instagram", encodedPass, "test2@gmail.com", "t"));
+        assertFalse(filesClass.saveToFile("instagram", encodedPass, "test@gmail.com", "n"));
     }
 }
