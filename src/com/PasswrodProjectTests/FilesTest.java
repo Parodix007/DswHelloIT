@@ -30,7 +30,7 @@ public class FilesTest {
     }
 
     /**
-     * <p>Metoda sprawdzająca czy podana ścieżka w konstruktorze klasy {@link FilesClass#FilesClass(String)} jest folderem i czy isteniej</p>
+     * <p>Metoda sprawdzająca czy podana ścieżka w konstruktorze klasy {@link FilesClass#FilesClass(String ścieżka)} jest folderem i czy isteniej</p>
      * @author Sebastian Siarczyński
      */
     @Test
@@ -51,9 +51,10 @@ public class FilesTest {
     public void checkFullPath() {
         assertNotNull(filesClass.getFullPath());
     }
+
     /**
      * <p>Metoda sprwadzająca poprawność zapisywania do pliku</p>
-     * @throws NoSuchAlgorithmException
+     * @throws NoSuchAlgorithmException gdy został podany zły algorytm szyfrowania
      * @author Sebastian Siarczyński
      */
     @Test

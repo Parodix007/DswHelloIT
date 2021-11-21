@@ -2,6 +2,8 @@ package com.PasswordProject;
 
 import picocli.CommandLine;
 
+import java.util.Collections;
+
 public class main {
     public static void main(String[] args) throws RuntimeException {
         int execute = new CommandLine(new CLIClass()).execute("-p", "-f", "facebook", "/Users/sebastiansiarczynski", "test2@gmail.com");

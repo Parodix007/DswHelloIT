@@ -1,6 +1,5 @@
 package com.PasswordProject;
 
-import groovy.json.JsonBuilder;
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import org.json.JSONObject;
@@ -113,7 +112,7 @@ public class FilesClass {
                     });
             Files.writeString(fullPath.toPath(), jsonFromFile.get().toString());
         } catch (IOException e) {
-            System.out.println("Błąd zapisu, spróbuj ponowanie...");
+            System.out.println("Błąd zapisu do pliku, spróbuj ponowanie...");
             return false;
         }
         return true;
